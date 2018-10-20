@@ -16,19 +16,45 @@ pub struct RecordCharacteristics {
 }
 
 
-// #[derive(Debug)]
-// enum MyOutput {
-//     Var1(i32),
-//     Var2(String),
-// }
-// 
-// fn func1(i: i32) -> MyOutput {
-//     match i {
-//         1 => MyOutput::Var1(vec![1, 2, 3]),
-//         _ => MyOutput::Var2(vec!["a".into(), "b".into()]),
-//     }
-// }
+#[derive(Debug)]
+pub enum MyOutput {
+    
+    StringType(String),
+    F64Type(f64),
+    U64Type(u64),
+    I64Type(i64),
+    F32Type(f32),
+    U32Type(u32),
+    I32Type(i32),
 
+}
+
+pub fn auto_converter(i: u8, value: String) -> MyOutput {
+    match i {
+        1 => MyOutput::StringType(value),
+        2 => MyOutput::F64Type(value.parse::<f64>().unwrap()),
+        _ => MyOutput::F64Type(0.56),
+    }
+}
+
+pub trait Conversion {
+
+    fn conversion(self) -> f64;
+
+
+}
+
+impl Conversion for String {
+    fn conversion(self)-> f64{
+
+        0.324234 as f64
+
+
+    }
+
+
+
+}
 
 
 
@@ -48,7 +74,10 @@ pub enum DataType {
 
 ///This function converts the DataType enum to a numeric u8 value suitable for storage in the database.
 
-fn data_type(datatype: DataType) -> u8 {
+
+
+
+pub fn data_type(datatype: DataType) -> u8 {
     match datatype {
         DataType::Empty => 0,
         DataType::StringType => 1,

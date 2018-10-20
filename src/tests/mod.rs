@@ -5,6 +5,20 @@ mod test {
     use engine::*;
 
     #[test]
+    fn test_auto_converter() {
+
+        let result = auto_converter(data_type(DataType::F64Type),"0.9087345978".to_string());
+        println!("Auto Converter {:#?}", result);
+
+        
+        //assert_eq!(0.9087345978 as f64,result);
+        // let mut database = new_empty_database();
+        // database.add_record(20);
+        // println!("Test Return datatype {}", database.return_data_type(1));
+        // assert_eq!(database.get_record(1), "20".to_string());
+    }
+
+    #[test]
     fn test_new_empty_database() {
         let mut database = new_empty_database();
         database.add_record(20);

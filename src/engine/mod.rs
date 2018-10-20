@@ -3,6 +3,7 @@ use std::fs::OpenOptions;
 use std::io::prelude::*;
 
 use file_services;
+use std::convert::Into;
 
 #[derive(Debug)]
 pub struct RecordCharacteristics {
@@ -15,10 +16,8 @@ pub struct RecordCharacteristics {
     pub key: String,
 }
 
-
 #[derive(Debug)]
 pub enum MyOutput {
-    
     StringType(String),
     F64Type(f64),
     U64Type(u64),
@@ -26,37 +25,39 @@ pub enum MyOutput {
     F32Type(f32),
     U32Type(u32),
     I32Type(i32),
-
 }
 
-pub fn auto_converter(i: u8, value: String) -> MyOutput {
-    match i {
-        1 => MyOutput::StringType(value),
-        2 => MyOutput::F64Type(value.parse::<f64>().unwrap()),
-        _ => MyOutput::F64Type(0.56),
+impl Into<Option<f64>> for MyOutput {
+    fn into(self) -> Option<f64> {
+        match self {
+            MyOutput::F64Type(u) => Some(u),
+            _ => None,
+        }
     }
 }
 
-pub trait Conversion {
+// pub fn auto_converter(i: u8, value: String) -> MyOutput {
+//     match i {
+//         1 => MyOutput::StringType(value),
+//         2 => MyOutput::F64Type(value.parse::<f64>().unwrap()),
+//         _ => MyOutput::F64Type(0.56),
+//     }
+// }
 
-    fn conversion(self) -> f64;
+// pub trait Conversion {
 
+//     fn conversion(self) -> f64;
 
-}
+// }
 
-impl Conversion for String {
-    fn conversion(self)-> f64{
+// impl Conversion for String {
+//     fn conversion(self)-> f64{
 
-        0.324234 as f64
+//         0.324234 as f64
 
+//     }
 
-    }
-
-
-
-}
-
-
+// }
 
 ///This is enum helps categorise the type of data that is being stored. It will be used to convert the data
 ///back to its orignal type (this will be fully implimented in the next release).
@@ -73,9 +74,6 @@ pub enum DataType {
 }
 
 ///This function converts the DataType enum to a numeric u8 value suitable for storage in the database.
-
-
-
 
 pub fn data_type(datatype: DataType) -> u8 {
     match datatype {
@@ -789,9 +787,6 @@ impl RecordData {
             None => return 0,
         }
     }
-    
-    
-    
 
     /// Saves a database hash table to a file. This will need to be run to save
     /// the database to a file. It is up to the user to impliment this action.

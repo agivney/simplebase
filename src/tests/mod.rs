@@ -7,7 +7,8 @@ mod test {
     #[test]
     fn test_auto_converter() {
 
-        let result = auto_converter(data_type(DataType::F64Type),"0.9087345978".to_string());
+        let result = MyOutput::F64Type(0.45);
+
         println!("Auto Converter {:#?}", result);
 
         

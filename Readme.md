@@ -61,7 +61,7 @@ database.save_database("test5base.txt");
 
 ```
 
-In this release one can directly stores String,f32,f64,u32,u64,i32,i64. In the next release the aim is to be able to directly receive the same types back. Currently the data is returned as a String type.
+In this release one can directly store a String,f32,f64,u32,u64,i32,i64. In the next release the aim is to be able to receive the same types back (I am not sure how feasable this is, but I will attempt to put something in place and see how it goes). Currently the data is returned as a String type.
 
 
 ### License

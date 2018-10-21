@@ -14,6 +14,8 @@ pub struct RecordCharacteristics {
     pub size: usize,
     pub record: String,
     pub key: String,
+    // pub obfuscated: u32,   will be added in ver 3:0, breaking change in code.
+    // pub encryption_key: String,  will be added in ver 3:0, breaking change in code.
 }
 
 #[derive(Debug)]
@@ -771,6 +773,46 @@ impl RecordData {
             None => return "".to_string(),
         }
     }
+    
+    
+    ///This function returns a String which is obfuscated. It is not encrypted, its main role is for the data to miss 
+    /// being indexed or found in a file search. In 3.0 release this will be fully implimented in the struct as this will
+    /// be a breaking change.
+    /// # Examples
+    ///
+    /// ```
+    /// use simplebase::engine::*;
+    /// let mut loaded_database = load_hash_database("test1base.txt");
+    /// let a = loaded_database.obfuscate_data("This is a test".to_string());
+    /// let b = loaded_database.obfuscate_data(a);
+    /// assert_eq!("This is a test".to_string(),b);
+    /// ```
+        
+    pub fn obfuscate_data(&self, data_to_obfuscate: String) -> String {
+        let string_to_vector = &data_to_obfuscate.as_bytes();
+        let mut new_obfuscated_vector: Vec<u8> =  Vec::new();
+        let obfuscation_vector = vec![0x34,0xc5,0xd4,0x54];
+        let mut counter = 0;
+        for i in string_to_vector.iter(){
+        
+            new_obfuscated_vector.push(i^obfuscation_vector[counter]);
+            if counter > obfuscation_vector.len()-1{
+                counter = 0;
+            }
+        }
+        
+        let result =  String::from_utf8_lossy(&new_obfuscated_vector);
+        result.to_string()
+        
+    
+    }
+    
+    
+    
+    
+    
+    
+    
 
     ///This function returns the data type (e.g String, u64, f64 etc) of a stored value. This is based on the DataType enum.
     ///

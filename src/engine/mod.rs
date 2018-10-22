@@ -60,7 +60,7 @@ impl Into<Option<f64>> for MyOutput {
 //     }
 
 // }
-
+ 
 ///This is enum helps categorise the type of data that is being stored. It will be used to convert the data
 ///back to its orignal type (this will be fully implimented in the next release).
 

@@ -331,6 +331,39 @@ pub fn load_hash_database(database_name: &str) -> RecordData {
     }
 }
 
+
+    ///This function returns a String which is obfuscated. It is not encrypted, its main role is for the data to miss 
+    /// being indexed or found in a file search. In 3.0 release this will be fully implimented in the struct as this will
+    /// be a breaking change.
+    /// # Examples
+    ///
+    /// ```
+    /// use simplebase::engine::*;
+    /// let mut loaded_database = load_hash_database("test1base.txt");
+    /// let a = obfuscate_data("This is a test".to_string());
+    /// let b = obfuscate_data(a);
+    /// assert_eq!("This is a test".to_string(),b);
+    /// ```
+        
+    pub fn obfuscate_data(data_to_obfuscate: String) -> String {
+        let string_to_vector = &data_to_obfuscate.as_bytes();
+        let mut new_obfuscated_vector: Vec<u8> =  Vec::new();
+        let obfuscation_vector = vec![0x34,0xc5,0xd4,0x54];
+        let mut counter = 0;
+        for i in string_to_vector.iter(){
+        
+            new_obfuscated_vector.push(i^obfuscation_vector[counter]);
+            if counter > obfuscation_vector.len()-1{
+                counter = 0;
+            }
+        }
+        
+        let result =  String::from_utf8_lossy(&new_obfuscated_vector);
+        result.to_string()
+        
+    
+    }
+
 impl Base for i64 {
     fn addb(self) -> (DataType, String) {
         (DataType::I64Type, self.to_string())
@@ -537,6 +570,26 @@ impl RecordDataReadOnly {
             None => return true,
         }
     }
+    
+    /// Checks everycheck sum in the database for each record. If it does not match,  a message is printed stated which record has potentially being 
+    /// corrupted.
+    /// # Examples
+    ///
+    /// ```
+    /// use simplebase::engine::*;
+    /// let loaded_database = load_hash_database_read_only("test1base.txt");
+    /// loaded_database.verify_database();
+    ///```
+
+    pub fn verify_database(&self)  {
+        
+        for i in &self.hash_data {
+                 if chksum(&i.1.record.as_bytes()) != i.1.chksum {
+                    println!("{} could potentially be corrupted, this does not mean the whole database has been affected, just the 
+                    mentioned record", i.1.record_id);
+                    } 
+            }
+        }
 }
 
 impl RecordData {
@@ -775,40 +828,6 @@ impl RecordData {
     }
     
     
-    ///This function returns a String which is obfuscated. It is not encrypted, its main role is for the data to miss 
-    /// being indexed or found in a file search. In 3.0 release this will be fully implimented in the struct as this will
-    /// be a breaking change.
-    /// # Examples
-    ///
-    /// ```
-    /// use simplebase::engine::*;
-    /// let mut loaded_database = load_hash_database("test1base.txt");
-    /// let a = loaded_database.obfuscate_data("This is a test".to_string());
-    /// let b = loaded_database.obfuscate_data(a);
-    /// assert_eq!("This is a test".to_string(),b);
-    /// ```
-        
-    pub fn obfuscate_data(&self, data_to_obfuscate: String) -> String {
-        let string_to_vector = &data_to_obfuscate.as_bytes();
-        let mut new_obfuscated_vector: Vec<u8> =  Vec::new();
-        let obfuscation_vector = vec![0x34,0xc5,0xd4,0x54];
-        let mut counter = 0;
-        for i in string_to_vector.iter(){
-        
-            new_obfuscated_vector.push(i^obfuscation_vector[counter]);
-            if counter > obfuscation_vector.len()-1{
-                counter = 0;
-            }
-        }
-        
-        let result =  String::from_utf8_lossy(&new_obfuscated_vector);
-        result.to_string()
-        
-    
-    }
-    
-    
-    
     
     
     
@@ -876,6 +895,27 @@ impl RecordData {
             None => return true, //return ChksumResult::Empty,
         }
     }
+    
+    /// Checks everycheck sum in the database for each record. If it does not match,  a message is printed stated which record has potentially being 
+    /// corrupted.
+    /// # Examples
+    ///
+    /// ```
+    /// use simplebase::engine::*;
+    /// let loaded_database = load_hash_database("test1base.txt");
+    /// loaded_database.verify_database();
+    ///```
+
+    pub fn verify_database(&self)  {
+        
+        for i in &self.hash_data {
+                 if chksum(&i.1.record.as_bytes()) != i.1.chksum {
+                    println!("{} could potentially be corrupted, this does not mean the whole database has been affected, just the 
+                    mentioned record", i.1.record_id);
+                    } 
+            }
+        }
+       
 }
 
 ///This function creates a new empty database which is writable and readable.

@@ -146,6 +146,15 @@ mod test {
         loaded_database_read_only.get_record(4);
         database.delete_record(4);
     }
+    
+    #[test]
+    fn test_verify_database() {
+        
+
+        let loaded_database = load_hash_database("test1base.txt");
+        loaded_database.verify_database();
+        //assert_eq!(true, result);
+    }
 
     #[test]
     fn test_verify_record() {

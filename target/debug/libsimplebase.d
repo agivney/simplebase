@@ -1,1 +1,0 @@
-C:\Users\Arthur\Desktop\rust\projects\base\target\debug\libsimplebase.rlib: C:\Users\Arthur\Desktop\rust\projects\base\src\engine\mod.rs C:\Users\Arthur\Desktop\rust\projects\base\src\file_services\mod.rs C:\Users\Arthur\Desktop\rust\projects\base\src\lib.rs C:\Users\Arthur\Desktop\rust\projects\base\src\tests\mod.rs

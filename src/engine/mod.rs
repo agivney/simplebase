@@ -4,7 +4,7 @@ use std::io::prelude::*;
 
 use file_services;
 
-const OBFUSCATE: bool = true;
+const OBFUSCATE: bool = false;
 
 #[derive(Debug)]
 pub struct RecordCharacteristics {
@@ -213,7 +213,6 @@ pub fn load_hash_database_read_only(database_name: &str) -> RecordDataReadOnly {
 
         counter += 8;
     }
-    //loaded_hash
 
     let mut record_counter2 = 0;
 
@@ -246,7 +245,6 @@ pub fn load_hash_database_read_only(database_name: &str) -> RecordDataReadOnly {
 pub fn load_hash_database(database_name: &str) -> RecordData {
     let mut loaded_hash: HashMap<usize, RecordCharacteristics> = HashMap::new();
     let raw_hash_file = file_services::open_file(&database_name).unwrap();
-    //let raw_hash_file = String::from_utf8_lossy(&raw_hash_file);
 
     let mut raw_hash_file = String::from_utf8_lossy(&raw_hash_file)
         .to_owned()
@@ -257,11 +255,6 @@ pub fn load_hash_database(database_name: &str) -> RecordData {
     }
 
     let pre_translated_hash_data: Vec<&str> = raw_hash_file.split("~$").collect();
-    //println!("Debug 555 {:?}", pre_translated_hash_data);
-
-    // if pre_translated_hash_data.len() < 8 {
-    //     return loaded_hash;
-    // }
 
     let mut counter = 0;
 

@@ -13,7 +13,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-simplebase = "0.2.2"
+simplebase = "0.2.3"
 ```
 
 
@@ -60,9 +60,9 @@ database.save_database("test5base.txt");
 }
 
 ```
-
-In this release one can directly store a String,f32,f64,u32,u64,i32,i64. In the next release the aim is to be able to receive the same types back (I am not sure how feasable this is, but I will attempt to put something in place and see how it goes). Currently the data is returned as a String type.
-
+This latest release adds an obfuscation routine that can be activated by changing the CONST value const OBFUSCATE: bool  to true. 
+By default it is false. This is useful to stop a database being indexed or searched (it is not encrypted as such, just slighlt
+mangled). You also now have the ability to verify the whole database.
 
 ### License
 

@@ -151,7 +151,7 @@ mod test {
     fn test_verify_database() {
         
 
-        let loaded_database = load_hash_database("test1base.txt");
+        let loaded_database = load_hash_database("test2base.txt");
         loaded_database.verify_database();
         //assert_eq!(true, result);
     }

@@ -3,7 +3,8 @@ use std::fs::OpenOptions;
 use std::io::prelude::*;
 
 use file_services;
-use std::convert::Into;
+
+const OBFUSCATE: bool = true;
 
 #[derive(Debug)]
 pub struct RecordCharacteristics {
@@ -29,38 +30,6 @@ pub enum MyOutput {
     I32Type(i32),
 }
 
-impl Into<Option<f64>> for MyOutput {
-    fn into(self) -> Option<f64> {
-        match self {
-            MyOutput::F64Type(u) => Some(u),
-            _ => None,
-        }
-    }
-}
-
-// pub fn auto_converter(i: u8, value: String) -> MyOutput {
-//     match i {
-//         1 => MyOutput::StringType(value),
-//         2 => MyOutput::F64Type(value.parse::<f64>().unwrap()),
-//         _ => MyOutput::F64Type(0.56),
-//     }
-// }
-
-// pub trait Conversion {
-
-//     fn conversion(self) -> f64;
-
-// }
-
-// impl Conversion for String {
-//     fn conversion(self)-> f64{
-
-//         0.324234 as f64
-
-//     }
-
-// }
- 
 ///This is enum helps categorise the type of data that is being stored. It will be used to convert the data
 ///back to its orignal type (this will be fully implimented in the next release).
 
@@ -115,7 +84,8 @@ pub struct RecordDataReadOnly {
     pub data_base: String,
 }
 
-/// Saves a database to a file.
+/// Saves a database to a file. If the OBFUSCATE const is set to true, the data is "obfuscated"
+/// (meaning the data is not encrypted but rather just slightly hidden).
 ///
 /// # Examples
 ///
@@ -153,7 +123,12 @@ pub fn save_hash_database(filename: &str, hash_to_save: &HashMap<usize, RecordCh
             + &individual_record_information.1.key
             + "~$";
     }
-    file.write(cache_write_hold.as_bytes()).unwrap();
+    if OBFUSCATE == false {
+        file.write(cache_write_hold.as_bytes()).unwrap();
+    } else {
+        file.write(obfuscate_data(cache_write_hold).as_bytes())
+            .unwrap();
+    }
 }
 
 /// This function produces a basic chksum for a Vector of u8 bytes. It is not for security purposes but
@@ -190,12 +165,15 @@ pub fn chksum(data: &[u8]) -> u32 {
 pub fn load_hash_database_read_only(database_name: &str) -> RecordDataReadOnly {
     let mut loaded_hash: HashMap<usize, RecordCharacteristics> = HashMap::new();
     let raw_hash_file = file_services::open_file(&database_name).unwrap();
-    let raw_hash_file = String::from_utf8_lossy(&raw_hash_file);
-    let pre_translated_hash_data: Vec<&str> = raw_hash_file.split("~$").collect();
+    let mut raw_hash_file = String::from_utf8_lossy(&raw_hash_file)
+        .to_owned()
+        .to_string();
 
-    // if pre_translated_hash_data.len() < 8 {
-    //     return loaded_hash;
-    // }
+    if OBFUSCATE == true {
+        raw_hash_file = obfuscate_data(raw_hash_file.to_string());
+    }
+
+    let pre_translated_hash_data: Vec<&str> = raw_hash_file.split("~$").collect();
 
     let mut counter = 0;
 
@@ -268,7 +246,16 @@ pub fn load_hash_database_read_only(database_name: &str) -> RecordDataReadOnly {
 pub fn load_hash_database(database_name: &str) -> RecordData {
     let mut loaded_hash: HashMap<usize, RecordCharacteristics> = HashMap::new();
     let raw_hash_file = file_services::open_file(&database_name).unwrap();
-    let raw_hash_file = String::from_utf8_lossy(&raw_hash_file);
+    //let raw_hash_file = String::from_utf8_lossy(&raw_hash_file);
+
+    let mut raw_hash_file = String::from_utf8_lossy(&raw_hash_file)
+        .to_owned()
+        .to_string();
+
+    if OBFUSCATE == true {
+        raw_hash_file = obfuscate_data(raw_hash_file.to_string());
+    }
+
     let pre_translated_hash_data: Vec<&str> = raw_hash_file.split("~$").collect();
     //println!("Debug 555 {:?}", pre_translated_hash_data);
 
@@ -331,38 +318,34 @@ pub fn load_hash_database(database_name: &str) -> RecordData {
     }
 }
 
+///This function returns a String which is obfuscated. It is not encrypted, its main role is for the data to miss
+/// being indexed or found in a file search. In 3.0 release this will be fully implimented in the struct as this will
+/// be a breaking change.
+/// # Examples
+///
+/// ```
+/// use simplebase::engine::*;
+/// let mut loaded_database = load_hash_database("test1base.txt");
+/// let a = obfuscate_data("This is a test".to_string());
+/// let b = obfuscate_data(a);
+/// assert_eq!("This is a test".to_string(),b);
+/// ```
 
-    ///This function returns a String which is obfuscated. It is not encrypted, its main role is for the data to miss 
-    /// being indexed or found in a file search. In 3.0 release this will be fully implimented in the struct as this will
-    /// be a breaking change.
-    /// # Examples
-    ///
-    /// ```
-    /// use simplebase::engine::*;
-    /// let mut loaded_database = load_hash_database("test1base.txt");
-    /// let a = obfuscate_data("This is a test".to_string());
-    /// let b = obfuscate_data(a);
-    /// assert_eq!("This is a test".to_string(),b);
-    /// ```
-        
-    pub fn obfuscate_data(data_to_obfuscate: String) -> String {
-        let string_to_vector = &data_to_obfuscate.as_bytes();
-        let mut new_obfuscated_vector: Vec<u8> =  Vec::new();
-        let obfuscation_vector = vec![0x34,0xc5,0xd4,0x54];
-        let mut counter = 0;
-        for i in string_to_vector.iter(){
-        
-            new_obfuscated_vector.push(i^obfuscation_vector[counter]);
-            if counter > obfuscation_vector.len()-1{
-                counter = 0;
-            }
+pub fn obfuscate_data(data_to_obfuscate: String) -> String {
+    let string_to_vector = &data_to_obfuscate.as_bytes();
+    let mut new_obfuscated_vector: Vec<u8> = Vec::new();
+    let obfuscation_vector = vec![0x34, 0xc5, 0xd4, 0x54, 0x00, 0xd3, 0x2a, 0x55];
+    let mut counter = 0;
+    for i in string_to_vector.iter() {
+        new_obfuscated_vector.push(i ^ obfuscation_vector[counter]);
+        if counter > obfuscation_vector.len() - 1 {
+            counter = 0;
         }
-        
-        let result =  String::from_utf8_lossy(&new_obfuscated_vector);
-        result.to_string()
-        
-    
     }
+
+    let result = String::from_utf8_lossy(&new_obfuscated_vector);
+    result.to_string()
+}
 
 impl Base for i64 {
     fn addb(self) -> (DataType, String) {
@@ -570,8 +553,8 @@ impl RecordDataReadOnly {
             None => return true,
         }
     }
-    
-    /// Checks everycheck sum in the database for each record. If it does not match,  a message is printed stated which record has potentially being 
+
+    /// Checks everycheck sum in the database for each record. If it does not match,  a message is printed stated which record has potentially being
     /// corrupted.
     /// # Examples
     ///
@@ -581,15 +564,14 @@ impl RecordDataReadOnly {
     /// loaded_database.verify_database();
     ///```
 
-    pub fn verify_database(&self)  {
-        
+    pub fn verify_database(&self) {
         for i in &self.hash_data {
-                 if chksum(&i.1.record.as_bytes()) != i.1.chksum {
-                    println!("{} could potentially be corrupted, this does not mean the whole database has been affected, just the 
+            if chksum(&i.1.record.as_bytes()) != i.1.chksum {
+                println!("{} could potentially be corrupted, this does not mean the whole database has been affected, just the 
                     mentioned record", i.1.record_id);
-                    } 
             }
         }
+    }
 }
 
 impl RecordData {
@@ -826,12 +808,6 @@ impl RecordData {
             None => return "".to_string(),
         }
     }
-    
-    
-    
-    
-    
-    
 
     ///This function returns the data type (e.g String, u64, f64 etc) of a stored value. This is based on the DataType enum.
     ///
@@ -895,8 +871,8 @@ impl RecordData {
             None => return true, //return ChksumResult::Empty,
         }
     }
-    
-    /// Checks everycheck sum in the database for each record. If it does not match,  a message is printed stated which record has potentially being 
+
+    /// Checks everycheck sum in the database for each record. If it does not match,  a message is printed stated which record has potentially being
     /// corrupted.
     /// # Examples
     ///
@@ -906,16 +882,14 @@ impl RecordData {
     /// loaded_database.verify_database();
     ///```
 
-    pub fn verify_database(&self)  {
-        
+    pub fn verify_database(&self) {
         for i in &self.hash_data {
-                 if chksum(&i.1.record.as_bytes()) != i.1.chksum {
-                    println!("{} could potentially be corrupted, this does not mean the whole database has been affected, just the 
+            if chksum(&i.1.record.as_bytes()) != i.1.chksum {
+                println!("{} could potentially be corrupted, this does not mean the whole database has been affected, just the 
                     mentioned record", i.1.record_id);
-                    } 
             }
         }
-       
+    }
 }
 
 ///This function creates a new empty database which is writable and readable.

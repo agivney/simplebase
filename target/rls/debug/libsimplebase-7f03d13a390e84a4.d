@@ -1,0 +1,1 @@
+c:\Users\Arthur\Desktop\rust\projects\base\target\rls\debug\libsimplebase-7f03d13a390e84a4.rmeta: c:\Users\Arthur\Desktop\rust\projects\base\src\engine\mod.rs c:\Users\Arthur\Desktop\rust\projects\base\src\file_services\mod.rs c:\Users\Arthur\Desktop\rust\projects\base\src\lib.rs c:\Users\Arthur\Desktop\rust\projects\base\src\tests\mod.rs

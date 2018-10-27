@@ -61,7 +61,7 @@ database.save_database("test5base.txt");
 
 ```
 This latest release adds an obfuscation routine that can be activated by changing the CONST value const OBFUSCATE: bool  to true. 
-By default it is false. This is useful to stop a database being indexed or searched (it is not encrypted as such, just slighlt
+By default it is false. This is useful to stop a database being indexed or searched (it is not encrypted as such, just slightly
 mangled). You also now have the ability to verify the whole database.
 
 ### License

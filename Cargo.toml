@@ -1,7 +1,7 @@
 [package]
 name = "simplebase"
 license = "MIT"
-version = "0.2.3"
+version = "0.2.4"
 readme = "Readme.md"
 repository = "https://github.com/agivney/simplebase"
 authors = ["Arthur Givney <agiv888@gmail.com>"]

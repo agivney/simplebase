@@ -547,23 +547,26 @@ impl RecordDataReadOnly {
         }
     }
 
-    /// Checks everycheck sum in the database for each record. If it does not match,  a message is printed stated which record has potentially being
-    /// corrupted.
+    /// Checks the checksum in the database for each record. If it does not match,  a message is printed stated which record has potentially being
+    /// corrupted. It also returns the amount of corrupted records if there are any. If zero is returned this means that there are no corrupted records.
     /// # Examples
     ///
     /// ```
     /// use simplebase::engine::*;
-    /// let loaded_database = load_hash_database_read_only("test1base.txt");
+    /// let loaded_database = load_hash_database("test1base.txt");
     /// loaded_database.verify_database();
     ///```
 
-    pub fn verify_database(&self) {
+    pub fn verify_database(&self) -> usize {
+        let mut corruption_counter = 0;
         for i in &self.hash_data {
             if chksum(&i.1.record.as_bytes()) != i.1.chksum {
                 println!("{} could potentially be corrupted, this does not mean the whole database has been affected, just the 
                     mentioned record", i.1.record_id);
+                corruption_counter += 1;
             }
         }
+        corruption_counter
     }
 }
 
@@ -865,8 +868,8 @@ impl RecordData {
         }
     }
 
-    /// Checks everycheck sum in the database for each record. If it does not match,  a message is printed stated which record has potentially being
-    /// corrupted.
+    /// Checks the checksum in the database for each record. If it does not match,  a message is printed stated which record has potentially being
+    /// corrupted. It also returns the amount of corrupted records if there are any. If zero is returned this means that there are no corrupted records.
     /// # Examples
     ///
     /// ```
@@ -875,13 +878,16 @@ impl RecordData {
     /// loaded_database.verify_database();
     ///```
 
-    pub fn verify_database(&self) {
+    pub fn verify_database(&self) -> usize {
+        let mut corruption_counter = 0;
         for i in &self.hash_data {
             if chksum(&i.1.record.as_bytes()) != i.1.chksum {
                 println!("{} could potentially be corrupted, this does not mean the whole database has been affected, just the 
                     mentioned record", i.1.record_id);
+                corruption_counter += 1;
             }
         }
+        corruption_counter
     }
 }
 

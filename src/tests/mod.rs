@@ -6,12 +6,10 @@ mod test {
 
     #[test]
     fn test_auto_converter() {
-
         let result = MyOutput::F64Type(0.45);
 
         println!("Auto Converter {:#?}", result);
 
-        
         //assert_eq!(0.9087345978 as f64,result);
         // let mut database = new_empty_database();
         // database.add_record(20);
@@ -39,6 +37,7 @@ mod test {
         let result = database.get_record(2);
         assert_eq!(result, "dsafkljh asdhj asdflksjdalk sdfalkj".to_string());
     }
+
     #[test]
     fn test_delete_record() {
         let mut database = new_empty_database();
@@ -145,12 +144,41 @@ mod test {
         loaded_database_read_only.get_record(4);
         loaded_database_read_only.get_record(4);
         database.delete_record(4);
+
+        let mut database = new_empty_database();
+
+        database.add_record_with_key("mob".to_string(), "0404111222".to_string());
+
+        database.add_record("This is a test".to_string());
+        database.add_record(0.23423 as f32);
+        database.add_record(0.23423 as f64);
+        database.add_record(23423 as u32);
+        database.add_record(23423 as u64);
+        database.add_record(-23423 as i32);
+        database.add_record(-23423 as i64);
+
+        database.add_record("Sam goes to the greatest market 1".to_string());
+        database.add_record("Sam goes to the greatest market 2".to_string());
+        database.add_record("Sam goes to the greatest market 3".to_string());
+        database.add_record("Sam goes to the greatest market 4".to_string());
+        database.add_record("Sam goes to the greatest market 5".to_string());
+        database.add_record_with_key("mob".to_string(), "0404111222".to_string());
+        database.add_record_with_key(
+            "test".to_string(),
+            "Sam goes to the greatest market 5".to_string(),
+        );
+        database.save_database("test5base.txt");
+
+        let loaded_database_read_only = load_hash_database_read_only("test5base.txt");
+        let _result = loaded_database_read_only.find("greatest");
+        let _result2 = loaded_database_read_only.get_record(4);
+        database.delete_record(4);
+        let _result3 = database.get_record(4);
+        database.save_database("test5base.txt");
     }
-    
+
     #[test]
     fn test_verify_database() {
-        
-
         let loaded_database = load_hash_database("test2base.txt");
         loaded_database.verify_database();
         //assert_eq!(true, result);

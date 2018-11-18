@@ -46,8 +46,8 @@ pub enum DataType {
 
 ///This function converts the DataType enum to a numeric u8 value suitable for storage in the database.
 
-pub fn data_type(datatype: DataType) -> u8 {
-    match datatype {
+pub fn data_type(datatype: &DataType) -> u8 {
+    match *datatype {
         DataType::Empty => 0,
         DataType::StringType => 1,
         DataType::F64Type => 2,
@@ -123,10 +123,10 @@ pub fn save_hash_database(filename: &str, hash_to_save: &HashMap<usize, RecordCh
             + &individual_record_information.1.key
             + "~$";
     }
-    if OBFUSCATE == false {
-        file.write(cache_write_hold.as_bytes()).unwrap();
+    if !OBFUSCATE {
+        file.write_all(cache_write_hold.as_bytes()).unwrap();
     } else {
-        file.write(obfuscate_data(cache_write_hold).as_bytes())
+        file.write_all(obfuscate_data(cache_write_hold).as_bytes())
             .unwrap();
     }
 }
@@ -138,15 +138,16 @@ pub fn save_hash_database(filename: &str, hash_to_save: &HashMap<usize, RecordCh
 ///
 /// ```
 /// let result = simplebase::engine::chksum(&"This is a test".as_bytes());
+/// assert_eq!(1269,result);
 ///
 /// ```
 
 pub fn chksum(data: &[u8]) -> u32 {
     let mut chksum = 0 as u32;
-    for i in 0..data.len() {
-        chksum += data[i] as u32;
+    for i in data.iter() {
+        chksum += u32::from(*i);
     }
-    return chksum;
+    chksum
 }
 
 /// This loads a file that was saved using the "save_database" as read only (only read functions such as searching etc are permitted)
@@ -169,7 +170,7 @@ pub fn load_hash_database_read_only(database_name: &str) -> RecordDataReadOnly {
         .to_owned()
         .to_string();
 
-    if OBFUSCATE == true {
+    if OBFUSCATE {
         raw_hash_file = obfuscate_data(raw_hash_file.to_string());
     }
 
@@ -216,10 +217,14 @@ pub fn load_hash_database_read_only(database_name: &str) -> RecordDataReadOnly {
 
     let mut record_counter2 = 0;
 
-    match loaded_hash.get(&0) {
-        Some(first_record) => record_counter2 = first_record.record_id, //this is a special value for the first record
-        None => (),
-    }
+    // match loaded_hash.get(&0) {
+    //     Some(first_record) => record_counter2 = first_record.record_id, //this is a special value for the first record
+    //     None => (),
+    // }
+
+    if let Some(first_record) = loaded_hash.get(&0) {
+        record_counter2 = first_record.record_id
+    };
 
     RecordDataReadOnly {
         location: 0,
@@ -250,7 +255,7 @@ pub fn load_hash_database(database_name: &str) -> RecordData {
         .to_owned()
         .to_string();
 
-    if OBFUSCATE == true {
+    if OBFUSCATE {
         raw_hash_file = obfuscate_data(raw_hash_file.to_string());
     }
 
@@ -388,10 +393,9 @@ impl Default for RecordDataReadOnly {
         let empty_hash = load_hash_database("empty_database.txt");
         let empty_hash = empty_hash.hash_data;
 
-        match empty_hash.get(&0) {
-            Some(first_record) => record_counter = first_record.record_id, //this is a special value for the first record
-            None => (),
-        }
+        if let Some(first_record) = empty_hash.get(&0) {
+            record_counter = first_record.record_id
+        };
 
         let database_contents = "".to_string();
 
@@ -411,10 +415,9 @@ impl Default for RecordData {
         let empty_hash = load_hash_database("empty_database.txt");
         let empty_hash = empty_hash.hash_data;
 
-        match empty_hash.get(&0) {
-            Some(first_record) => record_counter = first_record.record_id, //this is a special value for the first record
-            None => (),
-        }
+        if let Some(first_record) = empty_hash.get(&0) {
+            record_counter = first_record.record_id
+        };
 
         let database_contents = "".to_string();
 
@@ -443,13 +446,10 @@ impl RecordDataReadOnly {
         let mut search_results: Vec<String> = Vec::new();
 
         for i in &self.hash_data {
-            match i.1.record.find(&what_to_find) {
-                Some(_where_in_filename) => {
-                    println!("Record {}", i.1.record);
-                    search_results.push(i.0.to_string());
-                    search_results.push(i.1.record.clone());
-                }
-                None => (),
+            if let Some(_where_in_filename) = i.1.record.find(&what_to_find) {
+                println!("Record {}", i.1.record);
+                search_results.push(i.0.to_string());
+                search_results.push(i.1.record.clone());
             }
         }
         search_results
@@ -470,8 +470,8 @@ impl RecordDataReadOnly {
 
     pub fn get_record(&self, record_number: usize) -> String {
         match self.hash_data.get(&record_number) {
-            Some(record) => return record.record.to_owned(),
-            None => return "".to_string(),
+            Some(record) => record.record.to_owned(),
+            None => "".to_string(),
         }
     }
 
@@ -491,13 +491,9 @@ impl RecordDataReadOnly {
         let mut search_results: Vec<String> = Vec::new();
         //let records: Vec<&str> = self.data_base.split("<E><S>").collect();
         for i in &self.hash_data {
-            match i.1.key.find(&what_to_find) {
-                Some(_where_in_filename) => {
-                    // println!("Record {}", i.1.record);
-                    search_results.push(i.0.to_string());
-                    search_results.push(i.1.record.clone());
-                }
-                None => (),
+            if let Some(_where_in_filename) = i.1.key.find(&what_to_find) {
+                search_results.push(i.0.to_string());
+                search_results.push(i.1.record.clone());
             }
         }
         search_results
@@ -514,8 +510,8 @@ impl RecordDataReadOnly {
     /// ```
     pub fn return_data_type(&self, record_number: usize) -> u8 {
         match self.hash_data.get(&record_number) {
-            Some(record) => return record.datatype.to_owned(),
-            None => return 0,
+            Some(record) => record.datatype.to_owned(),
+            None => 0,
         }
     }
 
@@ -536,14 +532,8 @@ impl RecordDataReadOnly {
 
     pub fn verify_record(&self, record_number: usize) -> bool {
         match self.hash_data.get(&record_number) {
-            Some(record) => {
-                if chksum(&record.record.as_bytes()) == record.chksum {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-            None => return true,
+            Some(record) => chksum(&record.record.as_bytes()) == record.chksum,
+            None => true,
         }
     }
 
@@ -592,7 +582,7 @@ impl RecordData {
         let database_hold = RecordCharacteristics {
             record_id: self.record_counter,
             chksum: chksum(&what_to_save.as_bytes()),
-            datatype: data_type(data_type_hold),
+            datatype: data_type(&data_type_hold),
             location: 1,
             size: 0,
             record: what_to_save,
@@ -638,7 +628,7 @@ impl RecordData {
         let database_hold = RecordCharacteristics {
             record_id: self.record_counter,
             chksum: chksum(&what_to_save.as_bytes()),
-            datatype: data_type(data_type_hold),
+            datatype: data_type(&data_type_hold),
             location: 1,
             size: 0,
             record: what_to_save,
@@ -657,18 +647,18 @@ impl RecordData {
 
         //This checks to see if the key already exists, if it does it will not add the record
         //to the database
-        if self.find_key(&key_to_add).len() == 0 {
+        if self.find_key(&key_to_add).is_empty() {
             //This line updates the record counter in the database
             self.hash_data.insert(0, counter_record);
 
             self.hash_data.insert(self.record_counter, database_hold);
-            return true;
+            true
         } else {
             println!(
                 "The key {} already exist, not adding the record to the database",
                 key_to_add
             );
-            return false;
+            false
         }
     }
 
@@ -693,7 +683,7 @@ impl RecordData {
         let database_hold = RecordCharacteristics {
             record_id: self.record_counter,
             chksum: chksum(&what_to_save.as_bytes()),
-            datatype: data_type(data_type_hold),
+            datatype: data_type(&data_type_hold),
             location: 1,
             size: 0,
             record: what_to_save,
@@ -745,13 +735,9 @@ impl RecordData {
         let mut search_results: Vec<String> = Vec::new();
 
         for i in &self.hash_data {
-            match i.1.record.find(&what_to_find) {
-                Some(_where_in_filename) => {
-                    //println!("Record {}", i.0);
-                    search_results.push(i.0.to_string());
-                    search_results.push(i.1.record.clone());
-                }
-                None => (),
+            if let Some(_where_in_filename) = i.1.record.find(&what_to_find) {
+                search_results.push(i.0.to_string());
+                search_results.push(i.1.record.clone());
             }
         }
         search_results
@@ -773,13 +759,9 @@ impl RecordData {
         let mut search_results: Vec<String> = Vec::new();
 
         for i in &self.hash_data {
-            match i.1.key.find(&what_to_find) {
-                Some(_where_in_filename) => {
-                    //println!("Record {}", i.1.record);
-                    search_results.push(i.0.to_string());
-                    search_results.push(i.1.record.clone());
-                }
-                None => (),
+            if let Some(_where_in_filename) = i.1.key.find(&what_to_find) {
+                search_results.push(i.0.to_string());
+                search_results.push(i.1.record.clone());
             }
         }
         search_results
@@ -800,8 +782,8 @@ impl RecordData {
 
     pub fn get_record(&self, record_number: usize) -> String {
         match self.hash_data.get(&record_number) {
-            Some(record) => return record.record.to_owned(),
-            None => return "".to_string(),
+            Some(record) => record.record.to_owned(),
+            None => "".to_string(),
         }
     }
 
@@ -816,8 +798,8 @@ impl RecordData {
     /// ```
     pub fn return_data_type(&self, record_number: usize) -> u8 {
         match self.hash_data.get(&record_number) {
-            Some(record) => return record.datatype.to_owned(),
-            None => return 0,
+            Some(record) => record.datatype.to_owned(),
+            None => 0,
         }
     }
 
@@ -854,17 +836,8 @@ impl RecordData {
 
     pub fn verify_record(&self, record_number: usize) -> bool {
         match self.hash_data.get(&record_number) {
-            Some(record) => {
-                if chksum(&record.record.as_bytes()) == record.chksum {
-                    return true;
-                //return ChksumResult::Pass;
-                } else {
-                    return false;
-
-                    //return ChksumResult::Fail;
-                }
-            }
-            None => return true, //return ChksumResult::Empty,
+            Some(record) => chksum(&record.record.as_bytes()) == record.chksum,
+            None => true, //return ChksumResult::Empty,
         }
     }
 

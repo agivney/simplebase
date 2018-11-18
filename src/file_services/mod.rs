@@ -10,11 +10,11 @@ pub fn open_file(filename: &str) -> io::Result<Vec<u8>> {
             //t.lock_exclusive()?;
             t.read_to_end(&mut contents).unwrap();
             //t.unlock()?;
-            return Ok(contents);
+            Ok(contents)
         }
         Err(e) => {
             println!("{:?}{}", "Unable to open file ", filename);
-            return Err(e);
+            Err(e)
         }
     }
 }

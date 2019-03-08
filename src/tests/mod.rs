@@ -10,11 +10,7 @@ mod test {
 
         println!("Auto Converter {:#?}", result);
 
-        //assert_eq!(0.9087345978 as f64,result);
-        // let mut database = new_empty_database();
-        // database.add_record(20);
-        // println!("Test Return datatype {}", database.return_data_type(1));
-        // assert_eq!(database.get_record(1), "20".to_string());
+        
     }
 
     #[test]
@@ -22,7 +18,7 @@ mod test {
         let mut database = new_empty_database();
         database.add_record(20);
         println!("Test Return datatype {}", database.return_data_type(1));
-        assert_eq!(database.get_record(1), "20".to_string());
+        assert_eq!(database.get_record(1), Some("20".to_string()));
     }
 
     #[test]
@@ -35,7 +31,20 @@ mod test {
         assert_eq!(result[1], "Sam goes to the  greatest market 3".to_string());
         database.add_record("dsafkljh asdhj asdflksjdalk sdfalkj".to_string());
         let result = database.get_record(2);
-        assert_eq!(result, "dsafkljh asdhj asdflksjdalk sdfalkj".to_string());
+        assert_eq!(result, Some("dsafkljh asdhj asdflksjdalk sdfalkj".to_string()));
+    }
+
+    #[test]
+    fn test_get_record() {
+        let mut database = new_empty_database();
+
+        database.add_record("Sam goes to the  greatest market 3".to_string());
+        database.add_record("dsafkljh asdhj asdflksjdalk sdfalkj".to_string());
+        database.add_record("dsafkljh asdhj asdflksjdalk sdfalkj".to_string());
+        let result = database.get_record(2);
+        assert_eq!(result, Some("dsafkljh asdhj asdflksjdalk sdfalkj".to_string()));
+        let result = database.get_record(200);
+        assert_eq!(result, None);
     }
 
     #[test]
@@ -48,7 +57,7 @@ mod test {
         assert_eq!(result[1], "Sam goes to the  greatest market 3".to_string());
         database.add_record("dsafkljh asdhj asdflksjdalk sdfalkj".to_string());
         let result = database.get_record(2);
-        assert_eq!(result, "dsafkljh asdhj asdflksjdalk sdfalkj".to_string());
+        assert_eq!(result, Some("dsafkljh asdhj asdflksjdalk sdfalkj".to_string()));
         println!("Pre delete record {:#?}", database);
         database.delete_record(1);
         println!("Pos delete record {:#?}", database);

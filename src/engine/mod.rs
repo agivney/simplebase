@@ -4,7 +4,7 @@ use std::io::prelude::*;
 
 extern crate fs2;
 use engine::fs2::FileExt;
- use std::io;
+use std::io;
 
 
 use file_services;
@@ -469,7 +469,7 @@ impl RecordDataReadOnly {
         search_results
     }
 
-    /// This method returns a record. It returns an empty string if the record does not exist.
+    /// This method returns a record. It returns None if the record does not exist.
     /// This is also available if a database is opened using the load_hash_database_read_only
     /// method.
     ///
@@ -482,11 +482,12 @@ impl RecordDataReadOnly {
     ///
     ///
 
-    pub fn get_record(&self, record_number: usize) -> String {
+    pub fn get_record(&self, record_number: usize) -> Option<String> {
         match self.hash_data.get(&record_number) {
-            Some(record) => record.record.to_owned(),
-            None => "".to_string(),
+            Some(record) => Some(record.record.to_owned()),
+            None => None,
         }
+        
     }
 
     ///This function returns the number of records stored in the database
@@ -794,7 +795,7 @@ impl RecordData {
         search_results
     }
 
-    /// This method returns a record. It returns an empty string if the record does not exist.
+    /// This method returns a record. It returns None if the record does not exist.
     /// This is also available if a database is opened using the load_hash_database_read_only
     /// method.
     ///
@@ -807,11 +808,14 @@ impl RecordData {
     ///
     ///
 
-    pub fn get_record(&self, record_number: usize) -> String {
+   
+
+    pub fn get_record(&self, record_number: usize) -> Option<String> {
         match self.hash_data.get(&record_number) {
-            Some(record) => record.record.to_owned(),
-            None => "".to_string(),
+            Some(record) => Some(record.record.to_owned()),
+            None => None,
         }
+        
     }
 
     ///This function returns the number of records stored in the database

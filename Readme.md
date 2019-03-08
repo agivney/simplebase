@@ -13,7 +13,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-simplebase = "0.2.6"
+simplebase = "0.3.0"
 ```
 
 
@@ -60,9 +60,7 @@ database.save_database("test5base.txt");
 }
 
 ```
-This latest release adds an obfuscation routine that can be activated by changing the CONST value const OBFUSCATE: bool  to true. 
-By default it is false. This is useful to stop a database being indexed or searched (it is not encrypted as such, just slightly
-mangled). You also now have the ability to verify the whole database.
+This latest release adds some minor breaking changes but I considered them important. The first is that file locking has been introduced for saves, this means the fs2 crate is now used. The second is that if a database.get_record(23423) is made, and the record does not exist, a "None" is now returned instead of an empty string. I also added a few more functions to the test suite.
 
 ### License
 

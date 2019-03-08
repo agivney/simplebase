@@ -2,6 +2,7 @@ use std::fs::File;
 use std::io;
 use std::io::prelude::*;
 
+
 pub fn open_file(filename: &str) -> io::Result<Vec<u8>> {
     let file = File::open(&filename);
     let mut contents: Vec<u8> = Vec::new();

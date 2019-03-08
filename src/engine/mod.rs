@@ -2,6 +2,11 @@ use std::collections::HashMap;
 use std::fs::OpenOptions;
 use std::io::prelude::*;
 
+extern crate fs2;
+use engine::fs2::FileExt;
+ use std::io;
+
+
 use file_services;
 
 const OBFUSCATE: bool = false;
@@ -96,7 +101,7 @@ pub struct RecordDataReadOnly {
 ///
 /// ```
 
-pub fn save_hash_database(filename: &str, hash_to_save: &HashMap<usize, RecordCharacteristics>) {
+pub fn save_hash_database(filename: &str, hash_to_save: &HashMap<usize, RecordCharacteristics>) -> io::Result<usize> {
     let mut file = OpenOptions::new()
         .write(true)
         .create(true)
@@ -124,11 +129,20 @@ pub fn save_hash_database(filename: &str, hash_to_save: &HashMap<usize, RecordCh
             + "~$";
     }
     if !OBFUSCATE {
+        file.lock_exclusive()?;
         file.write_all(cache_write_hold.as_bytes()).unwrap();
+        file.unlock()?;
+        return Ok(0);
+       
     } else {
+        file.lock_exclusive()?;
         file.write_all(obfuscate_data(cache_write_hold).as_bytes())
             .unwrap();
+        file.unlock()?;
+        return Ok(0);
+          
     }
+    
 }
 
 /// This function produces a basic chksum for a Vector of u8 bytes. It is not for security purposes but
@@ -475,6 +489,19 @@ impl RecordDataReadOnly {
         }
     }
 
+    ///This function returns the number of records stored in the database
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use simplebase::engine::*;
+    /// let mut database = load_hash_database("test1base.txt");
+    /// database.length();
+    /// ```
+    pub fn length(&self) -> usize {
+        self.record_counter
+        }
+
     /// Searches the database based on key and returns the matching record associated with the key.
     /// The returned results are collacted in a String vector consisting of two values for each match:
     /// 1)The record id 2) The contents of the matching record.
@@ -787,6 +814,20 @@ impl RecordData {
         }
     }
 
+    ///This function returns the number of records stored in the database
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use simplebase::engine::*;
+    /// let mut database = load_hash_database("test1base.txt");
+    /// database.length();
+    /// ```
+    pub fn length(&self) -> usize {
+        self.record_counter
+        }
+    
+
     ///This function returns the data type (e.g String, u64, f64 etc) of a stored value. This is based on the DataType enum.
     ///
     /// # Examples
@@ -816,7 +857,7 @@ impl RecordData {
     /// ```
 
     pub fn save_database(&self, filename: &str) {
-        save_hash_database(filename, &self.hash_data);
+        save_hash_database(filename, &self.hash_data).unwrap();
     }
 
     /// Calculates a simple chksum on the contents of a record and compares it to the stored

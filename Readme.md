@@ -1,7 +1,7 @@
 simplebase
 ==========
 
-A simple to use database library designed to have no dependencies
+A simple to use database library
 
 ### Documentation
 
@@ -13,7 +13,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-simplebase = "0.2.5"
+simplebase = "0.2.6"
 ```
 
 

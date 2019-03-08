@@ -94,6 +94,16 @@ mod test {
         assert_eq!("0404111222".to_string(), result[1]);
     }
 
+    
+    #[test]
+    fn test_length() {
+        let mut database = new_empty_database();
+        database.add_record_with_key("mob".to_string(), "0404111222".to_string());
+        database.add_record_with_key("mob".to_string(), "0404111222".to_string());
+        database.add_record_with_key("mob".to_string(), "0404111222".to_string());
+        assert_eq!(3, database.length());
+    }
+
     #[test]
     fn test_add_record_with_key() {
         let mut database = new_empty_database();

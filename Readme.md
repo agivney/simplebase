@@ -60,7 +60,10 @@ database.save_database("test5base.txt");
 }
 
 ```
-This latest release adds some minor breaking changes but I considered them important. The first is that file locking has been introduced for saves, this means the fs2 crate is now used. The second is that if a database.get_record(23423) is made, and the record does not exist, a "None" is now returned instead of an empty string. I also added a few more functions to the test suite.
+This latest release adds some minor breaking changes but I considered them important. The first is that file locking has been introduced for reading and saving, this means the fs2 crate is now used. I also added a hammer test, that hammers the database with 50 saves running on 2 threads simultanously (I tested it with 500 saves on my own computer on 2 simultaneous tests) to make sure the file locking is effective and that no database corruption was occuring under threaded conditions. It passes. 
+
+
+The second is that if a database.get_record(23423) is made, and the record does not exist, a "None" is now returned instead of an empty string. I also added a few more functions to the test suite.
 
 ### License
 

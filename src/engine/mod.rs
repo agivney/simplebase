@@ -1,10 +1,5 @@
 use std::collections::HashMap;
-use std::fs::OpenOptions;
-use std::io::prelude::*;
 
-extern crate fs2;
-use engine::fs2::FileExt;
-use std::io;
 
 
 use file_services;
@@ -101,13 +96,11 @@ pub struct RecordDataReadOnly {
 ///
 /// ```
 
-pub fn save_hash_database(filename: &str, hash_to_save: &HashMap<usize, RecordCharacteristics>) -> io::Result<usize> {
-    let mut file = OpenOptions::new()
-        .write(true)
-        .create(true)
-        .truncate(true)
-        .open(filename)
-        .unwrap();
+pub fn save_hash_database(
+    filename: &str,
+    hash_to_save: &HashMap<usize, RecordCharacteristics>,
+) {  //-> io::Result<usize> 
+    
     let mut cache_write_hold = "".to_string();
     for individual_record_information in hash_to_save {
         cache_write_hold = cache_write_hold
@@ -129,20 +122,14 @@ pub fn save_hash_database(filename: &str, hash_to_save: &HashMap<usize, RecordCh
             + "~$";
     }
     if !OBFUSCATE {
-        file.lock_exclusive()?;
-        file.write_all(cache_write_hold.as_bytes()).unwrap();
-        file.unlock()?;
-        return Ok(0);
-       
+
+        file_services::save_data(filename,cache_write_hold.as_bytes() );
+        
     } else {
-        file.lock_exclusive()?;
-        file.write_all(obfuscate_data(cache_write_hold).as_bytes())
-            .unwrap();
-        file.unlock()?;
-        return Ok(0);
-          
-    }
-    
+
+        file_services::save_data(filename,obfuscate_data(cache_write_hold).as_bytes());
+   
+}
 }
 
 /// This function produces a basic chksum for a Vector of u8 bytes. It is not for security purposes but
@@ -487,7 +474,6 @@ impl RecordDataReadOnly {
             Some(record) => Some(record.record.to_owned()),
             None => None,
         }
-        
     }
 
     ///This function returns the number of records stored in the database
@@ -501,7 +487,7 @@ impl RecordDataReadOnly {
     /// ```
     pub fn length(&self) -> usize {
         self.record_counter
-        }
+    }
 
     /// Searches the database based on key and returns the matching record associated with the key.
     /// The returned results are collacted in a String vector consisting of two values for each match:
@@ -808,14 +794,11 @@ impl RecordData {
     ///
     ///
 
-   
-
     pub fn get_record(&self, record_number: usize) -> Option<String> {
         match self.hash_data.get(&record_number) {
             Some(record) => Some(record.record.to_owned()),
             None => None,
         }
-        
     }
 
     ///This function returns the number of records stored in the database
@@ -829,8 +812,7 @@ impl RecordData {
     /// ```
     pub fn length(&self) -> usize {
         self.record_counter
-        }
-    
+    }
 
     ///This function returns the data type (e.g String, u64, f64 etc) of a stored value. This is based on the DataType enum.
     ///
@@ -861,7 +843,7 @@ impl RecordData {
     /// ```
 
     pub fn save_database(&self, filename: &str) {
-        save_hash_database(filename, &self.hash_data).unwrap();
+        save_hash_database(filename, &self.hash_data);
     }
 
     /// Calculates a simple chksum on the contents of a record and compares it to the stored

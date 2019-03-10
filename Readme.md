@@ -13,7 +13,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-simplebase = "0.3.0"
+simplebase = "0.3.2"
 ```
 
 

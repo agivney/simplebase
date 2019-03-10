@@ -16,7 +16,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "simplebase"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "fs2 0.4.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]

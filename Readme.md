@@ -13,7 +13,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-simplebase = "0.3.2"
+simplebase = "0.3.3"
 ```
 
 
@@ -64,6 +64,7 @@ This latest release adds some minor breaking changes but I considered them impor
 
 
 The second is that if a database.get_record(23423) is made, and the record does not exist, a "None" is now returned instead of an empty string. I also added a few more functions to the test suite.
+
 
 ### License
 

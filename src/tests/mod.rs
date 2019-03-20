@@ -55,21 +55,83 @@ mod test {
     fn test_delete_record() {
         let mut database = new_empty_database();
 
-        database.add_record("Sam goes to the  greatest market 3".to_string());
-        database.add_record("dsafkljh asdhj asdflksjdalk sdfalkj".to_string());
-        let result = database.find("greatest");
-        assert_eq!(result[1], "Sam goes to the  greatest market 3".to_string());
-        database.add_record("dsafkljh asdhj asdflksjdalk sdfalkj".to_string());
-        let result = database.get_record(2);
-        assert_eq!(
-            result,
-            Some("dsafkljh asdhj asdflksjdalk sdfalkj".to_string())
-        );
-        println!("Pre delete record {:#?}", database);
+        database.add_record("1".to_string());
+        database.add_record("2".to_string());
+        database.add_record("3".to_string());
+        database.add_record("4".to_string());
+        database.add_record("5".to_string());
+        database.add_record("6".to_string());
+        database.add_record("7".to_string());
+        database.add_record("8".to_string());
+
+         database.add_record("$d ".to_string());
+        database.add_record("2".to_string());
+        database.add_record("3".to_string());
+        database.add_record("4".to_string());
+        database.add_record("$d 45".to_string());
+        database.add_record("6".to_string());
+        database.add_record("7".to_string());
+        database.add_record("8".to_string());
+
+        database.delete_record(2);
+
+        assert_eq!(Some("3".to_string()),database.get_record(3));
+        
+        database.save_database("delete_test.txt");
+
+        let database = load_hash_database("delete_test.txt");
+
+        assert_eq!(Some("1".to_string()),database.get_record(1));
+        assert_eq!(None,database.get_record(2));
+        assert_eq!(Some("3".to_string()),database.get_record(3));
+        assert_eq!(Some("4".to_string()),database.get_record(4));
+        assert_eq!(Some("5".to_string()),database.get_record(5));
+        assert_eq!(Some("6".to_string()),database.get_record(6));
+        assert_eq!(Some("7".to_string()),database.get_record(7));
+        assert_eq!(Some("8".to_string()),database.get_record(8));
+        database.save_database("delete_test.txt");
+
+        let mut database = load_hash_database("delete_test.txt");
         database.delete_record(1);
-        println!("Pos delete record {:#?}", database);
-        let result = database.find("greatest");
-        assert_eq!(result.len(), 0);
+        database.delete_record(8);
+
+        assert_eq!(None,database.get_record(1));
+        assert_eq!(None,database.get_record(2));
+        assert_eq!(Some("3".to_string()),database.get_record(3));
+        assert_eq!(Some("4".to_string()),database.get_record(4));
+        assert_eq!(Some("5".to_string()),database.get_record(5));
+        assert_eq!(Some("6".to_string()),database.get_record(6));
+        assert_eq!(Some("7".to_string()),database.get_record(7));
+        assert_eq!(None,database.get_record(8));
+
+        let mut database = load_hash_database("delete_test.txt");
+        database.delete_record(1);
+        database.delete_record(8);
+
+        database.add_record("$d ".to_string());
+        database.add_record("2".to_string());
+        database.add_record("3".to_string());
+        database.add_record("4".to_string());
+        database.add_record("$d 45".to_string());
+        database.add_record("6".to_string());
+        database.add_record("7".to_string());
+        database.add_record("8".to_string());
+
+        assert_eq!(None,database.get_record(1));
+        assert_eq!(None,database.get_record(2));
+        assert_eq!(Some("3".to_string()),database.get_record(3));
+        assert_eq!(Some("4".to_string()),database.get_record(4));
+        assert_eq!(Some("5".to_string()),database.get_record(5));
+        assert_eq!(Some("6".to_string()),database.get_record(6));
+        assert_eq!(Some("7".to_string()),database.get_record(7));
+        assert_eq!(None,database.get_record(8));
+
+        
+        
+
+
+
+
     }
     #[test]
     fn test_save_and_load_database() {

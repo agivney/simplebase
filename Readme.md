@@ -3,6 +3,8 @@ simplebase
 
 A simple to use database library
 
+[![Build Status](https://travis-ci.com/agivney/simplebase.svg?branch=master)]
+
 ### Documentation
 
 There is extensive documentation included with the source code and it can be rendered to html by running the 'cargo doc' from in the relevant directory of your project. It will be saved in the target/doc section of your project.

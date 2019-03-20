@@ -15,7 +15,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-simplebase = "0.3.3"
+simplebase = "0.3.31"
 ```
 
 

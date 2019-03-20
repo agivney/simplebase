@@ -10,7 +10,6 @@ use std::io::prelude::*;
 extern crate fs2;
 use self::fs2::FileExt;
 
-
 pub fn obfuscate_data(data_to_obfuscate: String) -> String {
     let string_to_vector = &data_to_obfuscate.as_bytes();
     let mut new_obfuscated_vector: Vec<u8> = Vec::new();

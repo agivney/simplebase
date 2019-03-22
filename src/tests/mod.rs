@@ -175,10 +175,16 @@ mod test {
     #[test]
     fn test_length() {
         let mut database = new_empty_database();
+
+        assert_eq!(0, database.length());
         database.add_record_with_key("mob".to_string(), "0404111222".to_string());
+        assert_eq!(1, database.length());
         database.add_record_with_key("mob".to_string(), "0404111222".to_string());
+        assert_eq!(2, database.length());
         database.add_record_with_key("mob".to_string(), "0404111222".to_string());
         assert_eq!(3, database.length());
+        database.add_record(0404111222);
+        assert_eq!(4, database.length());
     }
 
     #[test]
@@ -306,7 +312,7 @@ mod test {
     fn test_hammer_test_save_and_load_database_one() {
         
         let mut database = new_empty_database();
-        for i in 1..50 {
+        for _ in 1..50 {
             
             database.add_record_with_key("mob".to_string(), "0404111222".to_string());
             database.add_record("Sam goes to the  greatest market 1".to_string());
@@ -336,7 +342,7 @@ mod test {
     fn test_hammer_test_save_and_load_database_two() {
         
         let mut database = new_empty_database();
-        for i in 1..50 {
+        for _ in 1..50 {
             
             database.add_record_with_key("mob".to_string(), "0404111222".to_string());
             database.add_record("Sam goes to the  greatest market 1".to_string());

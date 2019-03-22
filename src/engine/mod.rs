@@ -1,7 +1,5 @@
 use std::collections::HashMap;
 
-
-
 use file_services;
 
 const OBFUSCATE: bool = false;
@@ -96,11 +94,9 @@ pub struct RecordDataReadOnly {
 ///
 /// ```
 
-pub fn save_hash_database(
-    filename: &str,
-    hash_to_save: &HashMap<usize, RecordCharacteristics>,
-) {  //-> io::Result<usize> 
-    
+pub fn save_hash_database(filename: &str, hash_to_save: &HashMap<usize, RecordCharacteristics>) {
+    //-> io::Result<usize>
+
     let mut cache_write_hold = "".to_string();
     for individual_record_information in hash_to_save {
         cache_write_hold = cache_write_hold
@@ -122,14 +118,10 @@ pub fn save_hash_database(
             + "~$";
     }
     if !OBFUSCATE {
-
-        file_services::save_data(filename,cache_write_hold.as_bytes() );
-        
+        file_services::save_data(filename, cache_write_hold.as_bytes());
     } else {
-
-        file_services::save_data(filename,obfuscate_data(cache_write_hold).as_bytes());
-   
-}
+        file_services::save_data(filename, obfuscate_data(cache_write_hold).as_bytes());
+    }
 }
 
 /// This function produces a basic chksum for a Vector of u8 bytes. It is not for security purposes but
@@ -486,7 +478,12 @@ impl RecordDataReadOnly {
     /// database.length();
     /// ```
     pub fn length(&self) -> usize {
-        self.record_counter
+        //self.record_counter
+        if self.hash_data.len() < 1 {
+            0
+        } else {
+            self.hash_data.len() - 1
+        }
     }
 
     /// Searches the database based on key and returns the matching record associated with the key.
@@ -811,7 +808,11 @@ impl RecordData {
     /// database.length();
     /// ```
     pub fn length(&self) -> usize {
-        self.record_counter
+        if self.hash_data.len() < 1 {
+            0
+        } else {
+            self.hash_data.len() - 1
+        }
     }
 
     ///This function returns the data type (e.g String, u64, f64 etc) of a stored value. This is based on the DataType enum.

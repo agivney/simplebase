@@ -15,7 +15,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-simplebase = "0.3.32"
+simplebase = "0.3.33"
 ```
 
 
@@ -71,6 +71,12 @@ Ver 0.3.32
 
 -Fixed an inacuracy in the length() function which could cause in inacurate result after a live delete.
 -Added some more functions to the test suite.
+
+Ver 0.3.33
+
+-Reverted back to the original length function as records were being skipped.
+
+
 
 
 ### License

@@ -478,12 +478,12 @@ impl RecordDataReadOnly {
     /// database.length();
     /// ```
     pub fn length(&self) -> usize {
-        //self.record_counter
-        if self.hash_data.len() < 1 {
-            0
-        } else {
-            self.hash_data.len() - 1
-        }
+         // if self.hash_data.len() < 1 {
+        //     0
+        // } else {
+        //     self.hash_data.len() - 1
+        // }
+        self.record_counter
     }
 
     /// Searches the database based on key and returns the matching record associated with the key.
@@ -808,11 +808,12 @@ impl RecordData {
     /// database.length();
     /// ```
     pub fn length(&self) -> usize {
-        if self.hash_data.len() < 1 {
-            0
-        } else {
-            self.hash_data.len() - 1
-        }
+        // if self.hash_data.len() < 1 {
+        //     0
+        // } else {
+        //     self.hash_data.len() - 1
+        // }
+        self.record_counter
     }
 
     ///This function returns the data type (e.g String, u64, f64 etc) of a stored value. This is based on the DataType enum.

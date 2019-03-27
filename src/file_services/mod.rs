@@ -3,6 +3,10 @@ use std::fs::OpenOptions;
 use std::io;
 use std::io::prelude::*;
 
+use std::{thread, time};
+
+
+
 //extern crate fs2;
 //use file_services::fs2::FileExt;
 //use engine::fs2::FileExt;
@@ -70,7 +74,7 @@ pub fn save_data(filename: &str, buf: &[u8]){
                     file.unlock().unwrap();
                     return;
                 }
-                Err(_) => (),
+                Err(_) => thread::sleep(time::Duration::from_millis(5)),
             }
         }
 

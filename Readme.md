@@ -15,7 +15,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-simplebase = "0.3.33"
+simplebase = "0.3.34"
 ```
 
 
@@ -62,19 +62,37 @@ database.save_database("test5base.txt");
 }
 
 ```
-This latest release adds some minor breaking changes but I considered them important. The first is that file locking has been introduced for reading and saving, this means the fs2 crate is now used. I also added a hammer test, that hammers the database with 50 saves running on 2 threads simultanously (I tested it with 500 saves on my own computer on 2 simultaneous tests) to make sure the file locking is effective and that no database corruption was occuring under threaded conditions. It passes. 
 
+Ver 0.3.34
 
-The second is that if a database.get_record(23423) is made, and the record does not exist, a "None" is now returned instead of an empty string. I also added a few more functions to the test suite.
+-Added the save_database_every() function as an option so that it will only save the database every # cycles. This 
+can reduce writes significantly in highly demanding situations. Please read the docs for the caviats.
+-I added a file 5 milisecond sleep when a file lock is encounted, this reduces locking and frees up things so that 
+a save can occurr. I did this since my file hammer testing was occasionally failing, since the write lock loop could
+not breath and free things up. This measure appears to who have resolved this issue. I would strong advise upgrading to
+this version.
+
+Ver 0.3.33
+
+-Reverted back to the original length function as records were being skipped.
 
 Ver 0.3.32
 
 -Fixed an inacuracy in the length() function which could cause in inacurate result after a live delete.
 -Added some more functions to the test suite.
 
-Ver 0.3.33
+Pre 0.3.32
 
--Reverted back to the original length function as records were being skipped.
+This latest release adds some minor breaking changes but I considered them important. The first is that file locking has been introduced for reading and saving, this means the fs2 crate is now used. I also added a hammer test, that hammers the database with 50 saves running on 2 threads simultanously (I tested it with 500 saves on my own computer on 2 simultaneous tests) to make sure the file locking is effective and that no database corruption was occuring under threaded conditions. It passes. 
+
+
+The second is that if a database.get_record(23423) is made, and the record does not exist, a "None" is now returned instead of an empty string. I also added a few more functions to the test suite.
+
+
+
+
+
+
 
 
 

@@ -64,7 +64,7 @@ mod test {
         database.add_record("7".to_string());
         database.add_record("8".to_string());
 
-         database.add_record("$d ".to_string());
+        database.add_record("$d ".to_string());
         database.add_record("2".to_string());
         database.add_record("3".to_string());
         database.add_record("4".to_string());
@@ -75,34 +75,34 @@ mod test {
 
         database.delete_record(2);
 
-        assert_eq!(Some("3".to_string()),database.get_record(3));
-        
+        assert_eq!(Some("3".to_string()), database.get_record(3));
+
         database.save_database("delete_test.txt");
 
         let database = load_hash_database("delete_test.txt");
 
-        assert_eq!(Some("1".to_string()),database.get_record(1));
-        assert_eq!(None,database.get_record(2));
-        assert_eq!(Some("3".to_string()),database.get_record(3));
-        assert_eq!(Some("4".to_string()),database.get_record(4));
-        assert_eq!(Some("5".to_string()),database.get_record(5));
-        assert_eq!(Some("6".to_string()),database.get_record(6));
-        assert_eq!(Some("7".to_string()),database.get_record(7));
-        assert_eq!(Some("8".to_string()),database.get_record(8));
+        assert_eq!(Some("1".to_string()), database.get_record(1));
+        assert_eq!(None, database.get_record(2));
+        assert_eq!(Some("3".to_string()), database.get_record(3));
+        assert_eq!(Some("4".to_string()), database.get_record(4));
+        assert_eq!(Some("5".to_string()), database.get_record(5));
+        assert_eq!(Some("6".to_string()), database.get_record(6));
+        assert_eq!(Some("7".to_string()), database.get_record(7));
+        assert_eq!(Some("8".to_string()), database.get_record(8));
         database.save_database("delete_test.txt");
 
         let mut database = load_hash_database("delete_test.txt");
         database.delete_record(1);
         database.delete_record(8);
 
-        assert_eq!(None,database.get_record(1));
-        assert_eq!(None,database.get_record(2));
-        assert_eq!(Some("3".to_string()),database.get_record(3));
-        assert_eq!(Some("4".to_string()),database.get_record(4));
-        assert_eq!(Some("5".to_string()),database.get_record(5));
-        assert_eq!(Some("6".to_string()),database.get_record(6));
-        assert_eq!(Some("7".to_string()),database.get_record(7));
-        assert_eq!(None,database.get_record(8));
+        assert_eq!(None, database.get_record(1));
+        assert_eq!(None, database.get_record(2));
+        assert_eq!(Some("3".to_string()), database.get_record(3));
+        assert_eq!(Some("4".to_string()), database.get_record(4));
+        assert_eq!(Some("5".to_string()), database.get_record(5));
+        assert_eq!(Some("6".to_string()), database.get_record(6));
+        assert_eq!(Some("7".to_string()), database.get_record(7));
+        assert_eq!(None, database.get_record(8));
 
         let mut database = load_hash_database("delete_test.txt");
         database.delete_record(1);
@@ -117,21 +117,52 @@ mod test {
         database.add_record("7".to_string());
         database.add_record("8".to_string());
 
-        assert_eq!(None,database.get_record(1));
-        assert_eq!(None,database.get_record(2));
-        assert_eq!(Some("3".to_string()),database.get_record(3));
-        assert_eq!(Some("4".to_string()),database.get_record(4));
-        assert_eq!(Some("5".to_string()),database.get_record(5));
-        assert_eq!(Some("6".to_string()),database.get_record(6));
-        assert_eq!(Some("7".to_string()),database.get_record(7));
-        assert_eq!(None,database.get_record(8));
+        assert_eq!(None, database.get_record(1));
+        assert_eq!(None, database.get_record(2));
+        assert_eq!(Some("3".to_string()), database.get_record(3));
+        assert_eq!(Some("4".to_string()), database.get_record(4));
+        assert_eq!(Some("5".to_string()), database.get_record(5));
+        assert_eq!(Some("6".to_string()), database.get_record(6));
+        assert_eq!(Some("7".to_string()), database.get_record(7));
+        assert_eq!(None, database.get_record(8));
+    }
 
-        
-        
+    #[test]
+    fn test_save_database_every() {
+        let mut database = new_empty_database();
+        database.add_record_with_key("mob".to_string(), "0404111222".to_string());
+        assert_eq!(false, database.save_database_every("test12base.txt", 2));
+        database.add_record("Sam goes to the  greatest market 1".to_string());
+        assert_eq!(true, database.save_database_every("test12base.txt", 2));
+        database.add_record("Sam goes to the  greatest market 2".to_string());
+        assert_eq!(false, database.save_database_every("test12base.txt", 2));
+        database.add_record("Sam goes to the  greatest market 3".to_string());
+        assert_eq!(true, database.save_database_every("test12base.txt", 2));
+        database.add_record("Sam goes to the  greatest market 4".to_string());
+        assert_eq!(false, database.save_database_every("test12base.txt", 2));
+        database.add_record("Sam goes to the  greatest market 5".to_string());
+        assert_eq!(true, database.save_database_every("test12base.txt", 2));
+        database.add_record_with_key("mob".to_string(), "0404111222".to_string());
+        assert_eq!(false, database.save_database_every("test12base.txt", 2));
+        database.add_record_with_key(
+            "test".to_string(),
+            "Sam goes to the  greatest market 5".to_string(),
+        );
+        assert_eq!(true, database.save_database_every("test12base.txt", 2));
+        database.add_record("Sam goes to the  greatest market 6".to_string());
+        assert_eq!(false, database.save_database_every("test12base.txt", 2));
 
+        let loaded_database_read_only = load_hash_database_read_only("test12base.txt");
+        let result = loaded_database_read_only.get_record(6);
 
+        assert_eq!(
+            "Sam goes to the  greatest market 5".to_string(),
+            result.unwrap()
+        );
 
+        let result = loaded_database_read_only.get_record(9);
 
+        assert_eq!(None, result);
     }
     #[test]
     fn test_save_and_load_database() {
@@ -310,10 +341,8 @@ mod test {
 
     #[test]
     fn test_hammer_test_save_and_load_database_one() {
-        
         let mut database = new_empty_database();
         for _ in 1..50 {
-            
             database.add_record_with_key("mob".to_string(), "0404111222".to_string());
             database.add_record("Sam goes to the  greatest market 1".to_string());
             database.add_record("Sam goes to the  greatest market 2".to_string());
@@ -326,24 +355,19 @@ mod test {
                 "Sam goes to the  greatest market 5".to_string(),
             );
             database.save_database("test8base.txt");
-
-            
         }
 
         let loaded_database_read_only = load_hash_database_read_only("test8base.txt");
-            match loaded_database_read_only.get_record((8 * 450) - 2) {
-                Some(x) => assert_eq!("Sam goes to the  greatest market 5".to_string(), x),
-                None => (),
-            
-            }
+        match loaded_database_read_only.get_record((8 * 450) - 2) {
+            Some(x) => assert_eq!("Sam goes to the  greatest market 5".to_string(), x),
+            None => (),
+        }
     }
 
     #[test]
     fn test_hammer_test_save_and_load_database_two() {
-        
         let mut database = new_empty_database();
         for _ in 1..50 {
-            
             database.add_record_with_key("mob".to_string(), "0404111222".to_string());
             database.add_record("Sam goes to the  greatest market 1".to_string());
             database.add_record("Sam goes to the  greatest market 2".to_string());
@@ -356,20 +380,12 @@ mod test {
                 "Sam goes to the  greatest market 5".to_string(),
             );
             database.save_database("test8base.txt");
-
-            
         }
         let loaded_database_read_only = load_hash_database_read_only("test8base.txt");
-            match loaded_database_read_only.get_record((8 * 451) - 2) {
-                Some(x) => assert_eq!("Sam goes to the  greatest market 5".to_string(), x),
-                None => (),
-            
-            }
+        match loaded_database_read_only.get_record((8 * 451) - 2) {
+            Some(x) => assert_eq!("Sam goes to the  greatest market 5".to_string(), x),
+            None => (),
+        }
     }
-
-
-
-
-
 
 }

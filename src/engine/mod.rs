@@ -478,7 +478,7 @@ impl RecordDataReadOnly {
     /// database.length();
     /// ```
     pub fn length(&self) -> usize {
-         // if self.hash_data.len() < 1 {
+        // if self.hash_data.len() < 1 {
         //     0
         // } else {
         //     self.hash_data.len() - 1
@@ -846,6 +846,30 @@ impl RecordData {
 
     pub fn save_database(&self, filename: &str) {
         save_hash_database(filename, &self.hash_data);
+    }
+
+    /// Saves a database hash table to a file every ## cycles. This is useful in high intensity/write scenarios where
+    /// you could have 1000s of saves a second. To increase performance you could use this function.
+    /// The only drawback is that if the server goes down, you could potentially lose a small amount of data since the last save.
+    /// Keep in mind that some form of save function will need to be run to save the database to a file. It is up to the user to
+    /// impliment this action. This function returns false if the database is not saved, true if it is.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use simplebase::engine::*;
+    /// let database = load_hash_database("test1base.txt");
+    /// database.save_database_every("test1base.txt", 10);
+    ///
+    /// ```
+
+    pub fn save_database_every(&self, filename: &str, save_cycle: usize) -> bool {
+        if ((self.record_counter % save_cycle) + save_cycle) % save_cycle == 0 {
+            save_hash_database(filename, &self.hash_data);
+            true
+        } else {
+            false
+        }
     }
 
     /// Calculates a simple chksum on the contents of a record and compares it to the stored

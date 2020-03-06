@@ -5,15 +5,10 @@ use std::io::prelude::*;
 
 use std::{thread, time};
 
-
-
-//extern crate fs2;
-//use file_services::fs2::FileExt;
-//use engine::fs2::FileExt;
-
 extern crate fs2;
 use self::fs2::FileExt;
 
+#[allow(dead_code)]
 pub fn obfuscate_data(data_to_obfuscate: String) -> String {
     let string_to_vector = &data_to_obfuscate.as_bytes();
     let mut new_obfuscated_vector: Vec<u8> = Vec::new();
@@ -38,17 +33,6 @@ pub fn open_file(filename: &str) -> io::Result<Vec<u8>> {
             t.read_to_end(&mut contents).unwrap();
             t.unlock()?;
             Ok(contents)
-
-        //     loop {
-        //     match t.lock_exclusive() {
-        //         Ok(_) => {
-        //             file.read_to_end(&mut contents).unwrap();
-        //             file.unlock().unwrap();
-        //             return Ok(contents);
-        //         }
-        //         Err(_) => (),
-        //     }
-        // }
         }
         Err(e) => {
             println!("{:?}{}", "Unable to open file ", filename);
@@ -57,8 +41,7 @@ pub fn open_file(filename: &str) -> io::Result<Vec<u8>> {
     }
 }
 
-pub fn save_data(filename: &str, buf: &[u8]){
-
+pub fn save_data(filename: &str, buf: &[u8]) {
     let mut file = OpenOptions::new()
         .write(true)
         .create(true)
@@ -67,18 +50,13 @@ pub fn save_data(filename: &str, buf: &[u8]){
         .unwrap();
 
     loop {
-            match file.lock_exclusive() {
-                Ok(_) => {
-                    file.write_all(buf)
-                        .unwrap();
-                    file.unlock().unwrap();
-                    return;
-                }
-                Err(_) => thread::sleep(time::Duration::from_millis(5)),
+        match file.lock_exclusive() {
+            Ok(_) => {
+                file.write_all(buf).unwrap();
+                file.unlock().unwrap();
+                return;
             }
+            Err(_) => thread::sleep(time::Duration::from_millis(5)),
         }
-
-
-
-
+    }
 }

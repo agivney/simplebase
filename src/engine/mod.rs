@@ -295,10 +295,14 @@ pub fn load_hash_database(database_name: &str) -> RecordData {
 
     let mut record_counter2 = 0;
 
-    match loaded_hash.get(&0) {
-        Some(first_record) => record_counter2 = first_record.record_id, //this is a special value for the first record
-        None => (),
-    }
+    // match loaded_hash.get(&0) {
+    //     Some(first_record) => record_counter2 = first_record.record_id, //this is a special value for the first record
+    //     None => (),
+    // }
+
+    if let Some(first_record) = loaded_hash.get(&0) {
+        record_counter2 = first_record.record_id
+    };
 
     RecordData {
         location: 0,

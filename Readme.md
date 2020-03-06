@@ -15,7 +15,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-simplebase = "0.3.34"
+simplebase = "0.3.35"
 ```
 
 
@@ -63,12 +63,19 @@ database.save_database("test5base.txt");
 
 ```
 
+Ver 0.3.35
+
+-Removed dead_code message due to the obfuscate data function (which can either be used or ignored).
+-Fixed spelling error inside readme.md.
+-Did a simple review of the code one year on and ran cargo-clippy on the code.
+
+
 Ver 0.3.34
 
 -Added the save_database_every() function as an option so that it will only save the database every # cycles. This 
 can reduce writes significantly in highly demanding situations. Please read the docs for the caviats.
 -I added a file 5 milisecond sleep when a file lock is encounted, this reduces locking and frees up things so that 
-a save can occurr. I did this since my file hammer testing was occasionally failing, since the write lock loop could
+a save can occurr. I did this since the file hammer testing was occasionally failing, since the write lock loop could
 not breath and free things up. This measure appears to who have resolved this issue. I would strong advise upgrading to
 this version.
 
